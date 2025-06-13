@@ -1,0 +1,19 @@
+from task1.data_preparation import load_data, split_data
+from task1.models.issue_type_classifier import IssueTypeClassifier
+from task1.models.urgency_classifier import UrgencyClassifier
+
+# Step 1: Load and split the data
+df = load_data("ai_dev_assignment_tickets_complex_1000.xls")
+X_train, X_test, y_issue_train, y_issue_test, y_urgency_train, y_urgency_test = split_data(df)
+
+# Step 2: Train issue type classifier
+issue_model = IssueTypeClassifier()
+issue_model.train(X_train, y_issue_train)
+issue_model.save()
+print("✅ Issue Type Classifier trained and saved.")
+
+# Step 3: Train urgency classifier
+urgency_model = UrgencyClassifier()
+urgency_model.train(X_train, y_urgency_train)
+urgency_model.save()
+print("✅ Urgency Classifier trained and saved.")
