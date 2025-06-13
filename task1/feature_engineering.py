@@ -1,9 +1,11 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
-from textblob import TextBlob
 
-def extract_features(df):
-    tfidf = TfidfVectorizer(max_features=500)
-    tfidf_matrix = tfidf.fit_transform(df['clean_text'])
-    df['ticket_length'] = df['ticket_text'].apply(len)
-    df['sentiment'] = df['ticket_text'].apply(lambda x: TextBlob(x).sentiment.polarity)
-    return tfidf_matrix, df[['ticket_length', 'sentiment']]
+class FeatureExtractor:
+    def __init__(self):
+        self.vectorizer = TfidfVectorizer(max_features=1000, ngram_range=(1, 2))
+
+    def fit_transform(self, X_train):
+        return self.vectorizer.fit_transform(X_train)
+
+    def transform(self, X):
+        return self.vectorizer.transform(X)
