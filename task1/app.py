@@ -17,5 +17,4 @@ demo = gr.Interface(
     description="Enter a customer support ticket to predict issue type, urgency, and extract useful entities."
 )
 
-if __name__ == "__main__":
-    demo.launch()
+demo.launch()
