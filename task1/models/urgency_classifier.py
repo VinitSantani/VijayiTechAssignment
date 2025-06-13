@@ -1,24 +1,31 @@
-from sklearn.linear_model import LogisticRegression
-from task1.feature_engineering import FeatureExtractor
 import joblib
 import os
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 class UrgencyClassifier:
     def __init__(self):
-        self.model = LogisticRegression()
-        self.fe = FeatureExtractor()
+        self.model = None
+        self.vectorizer = None
 
-    def train(self, X_train, y_train):
-        X_vec = self.fe.fit_transform(X_train)
-        self.model.fit(X_vec, y_train)
+    def train(self, X, y):
+        self.vectorizer = TfidfVectorizer()
+        X_vec = self.vectorizer.fit_transform(X)
 
-    def predict(self, X):
-        X_vec = self.fe.transform(X)
-        return self.model.predict(X_vec)
+        self.model = RandomForestClassifier()
+        self.model.fit(X_vec, y)
 
-    def save(self, path='urgency_model.pkl'):
-        joblib.dump((self.model, self.fe), path)
+    def predict(self, text):
+        if self.model is None or self.vectorizer is None:
+            raise ValueError("Model or vectorizer not loaded.")
+        X_vec = self.vectorizer.transform([text])
+        return self.model.predict(X_vec)[0]
 
-    def load(self, path='urgency_model.pkl'):
+    def save(self, path="models/urgency_model.joblib"):
+        joblib.dump((self.model, self.vectorizer), path)
+
+    def load(self, path="models/urgency_model.joblib"):
         if os.path.exists(path):
-            self.model, self.fe = joblib.load(path)
+            self.model, self.vectorizer = joblib.load(path)
+        else:
+            raise FileNotFoundError(f"No saved model found at {path}")
