@@ -1,8 +1,16 @@
 import re
 
-def extract_entities(text, product_list, complaint_keywords):
+def extract_entities(text):
     entities = {}
-    entities['products'] = [prod for prod in product_list if prod.lower() in text.lower()]
-    entities['dates'] = re.findall(r'\b(?:\d{1,2}[/-])?\d{1,2}[/-]\d{2,4}\b', text)
-    entities['complaints'] = [word for word in complaint_keywords if word in text.lower()]
+    emails = re.findall(r"[\w\.-]+@[\w\.-]+", text)
+    phones = re.findall(r"\+?\d[\d\-\(\) ]{7,}\d", text)
+    urls = re.findall(r"https?://\S+", text)
+    
+    if emails:
+        entities['emails'] = emails
+    if phones:
+        entities['phones'] = phones
+    if urls:
+        entities['urls'] = urls
+
     return entities
