@@ -1,31 +1,15 @@
 import pandas as pd
-import re
-import nltk
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+from sklearn.model_selection import train_test_split
 
-nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
-
-lemmatizer = WordNetLemmatizer()
-stop_words = set(stopwords.words('english'))
-
-def load_data(file_path):
-    df = pd.read_excel(file_path)
-    df.dropna(subset=['ticket_text', 'issue_type', 'urgency_level', 'product'], inplace=True)
+def load_data(path):
+    df = pd.read_excel(path)
     return df
 
-def normalize_text(text):
-    text = text.lower()
-    text = re.sub(r'[^a-z0-9\s]', '', text)
-    return text
-
-def preprocess_text(text):
-    tokens = normalize_text(text).split()
-    tokens = [lemmatizer.lemmatize(t) for t in tokens if t not in stop_words]
-    return ' '.join(tokens)
-
-def prepare_dataset(df):
-    df['clean_text'] = df['ticket_text'].apply(preprocess_text)
-    return df
+def split_data(df):
+    X = df['ticket_text']
+    y_issue = df['issue_type']
+    y_urgency = df['urgency_level']
+    X_train, X_test, y_issue_train, y_issue_test, y_urgency_train, y_urgency_test = train_test_split(
+        X, y_issue, y_urgency, test_size=0.2, random_state=42
+    )
+    return X_train, X_test, y_issue_train, y_issue_test, y_urgency_train, y_urgency_test
