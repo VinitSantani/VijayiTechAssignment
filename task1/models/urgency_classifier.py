@@ -1,16 +1,24 @@
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
+from sklearn.linear_model import LogisticRegression
+from task1.feature_engineering import FeatureExtractor
+import joblib
+import os
 
 class UrgencyClassifier:
     def __init__(self):
-        self.model = RandomForestClassifier(random_state=42)
+        self.model = LogisticRegression()
+        self.fe = FeatureExtractor()
 
-    def train(self, X, y):
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        self.model.fit(X_train, y_train)
-        preds = self.model.predict(X_test)
-        print("Urgency Classifier Report:\n", classification_report(y_test, preds))
+    def train(self, X_train, y_train):
+        X_vec = self.fe.fit_transform(X_train)
+        self.model.fit(X_vec, y_train)
 
     def predict(self, X):
-        return self.model.predict(X)
+        X_vec = self.fe.transform(X)
+        return self.model.predict(X_vec)
+
+    def save(self, path='urgency_model.pkl'):
+        joblib.dump((self.model, self.fe), path)
+
+    def load(self, path='urgency_model.pkl'):
+        if os.path.exists(path):
+            self.model, self.fe = joblib.load(path)
